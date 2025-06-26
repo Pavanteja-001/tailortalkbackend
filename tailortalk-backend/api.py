@@ -76,8 +76,6 @@ def get_calendar_service(creds=None):
                     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
                     "redirect_uris": [os.getenv("GOOGLE_REDIRECT_URI")]
                 }
-
-
             }
             try:
                 flow = InstalledAppFlow.from_client_config(client_config, SCOPES)
@@ -248,7 +246,7 @@ async def oauth2callback(request: Request):
         flow.fetch_token(code=code)
         creds = flow.credentials
         
-        # Store token in Supabaseទ
+        # Store token in Supabase
         supabase.table("tokens").upsert({
             "key": token_key,
             "token": creds.to_json()
