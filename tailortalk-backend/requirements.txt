@@ -6,3 +6,12 @@ python-dotenv==1.0.1
 supabase==2.9.1
 httpx==0.27.2
 PyJWT==2.8.0
+
+streamlit==1.39.0
+langgraph==0.2.17  # Updated to latest compatible version
+langchain-groq==0.2.0
+langchain-core>=0.3,<0.4  # Aligned with langchain-groq and langgraph
+httpx==0.27.2
+python-dotenv==1.0.1
+python-dateutil==2.9.0.post0
+requests==2.32.3
