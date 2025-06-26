@@ -1,0 +1,8 @@
+streamlit
+fastapi
+langgraph
+langchain-groq
+google-auth-oauthlib
+google-api-python-client
+uvicorn
+httpx
