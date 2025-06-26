@@ -24,7 +24,7 @@ class AgentState(TypedDict):
 load_dotenv()
 
 # Backend URL from environment variable
-BACKEND_URL = os.getenv("BACKEND_URL", "https://web-production-75a9a.up.railway.app")  # Default to local for testing
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")  # Default to local for testing
 
 # Initialize Groq model
 llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
