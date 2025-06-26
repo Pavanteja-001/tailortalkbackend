@@ -23,10 +23,13 @@ class AgentState(TypedDict):
 
 load_dotenv()
 
+# Backend URL from environment variable
+BACKEND_URL = os.getenv("BACKEND_URL", "https://web-production-75a9a.up.railway.app")  # Default to local for testing
+
 # Initialize Groq model
 llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
 
-# Define prompts
+# Define prompts (unchanged)
 intention_prompt = ChatPromptTemplate.from_template("""
 You are a conversational AI agent for booking appointments in India. Based on the user's message, identify their intent and return only the intent keyword. Possible intents are:
 - book_appointment
@@ -153,7 +156,7 @@ async def check_availability_node(state: AgentState) -> AgentState:
             start_str = start_date.astimezone(pytz.UTC).isoformat()
             end_str = end_date.astimezone(pytz.UTC).isoformat()
             response = await client.get(
-                f"http://127.0.0.1:8000/availability?start={start_str}&end={end_str}"
+                f"{BACKEND_URL}/availability?start={start_str}&end={end_str}"
             )
             response.raise_for_status()
             slots = response.json()["available_slots"]
@@ -292,7 +295,7 @@ async def confirm_booking(state: AgentState) -> AgentState:
                 "summary": "Meeting",
                 "description": "Booked via TailorTalk"
             }
-            response = await client.post("http://127.0.0.1:8000/book", json=booking_request)
+            response = await client.post(f"{BACKEND_URL}/book", json=booking_request)
             response.raise_for_status()
             state["messages"].append({"content": f"Booking confirmed: {response.json()['message']}", "role": "assistant"})
         except httpx.HTTPStatusError as e:
@@ -304,7 +307,7 @@ async def cancel_booking(state: AgentState) -> AgentState:
     """Handle cancellation of a booking in Asia/Kolkata."""
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get("http://127.0.0.1:8000/upcoming-events")
+            response = await client.get(f"{BACKEND_URL}/upcoming-events")
             response.raise_for_status()
             state["events"] = response.json()["events"]
         except httpx.HTTPStatusError as e:
@@ -339,7 +342,7 @@ async def cancel_booking(state: AgentState) -> AgentState:
         try:
             event_id = events[selected]['id']
             event_time = datetime.fromisoformat(events[selected]['start']['dateTime'].replace('Z', '+00:00')).astimezone(tz).strftime("%B %d, %Y, %I:%M %p")
-            response = await client.delete(f"http://127.0.0.1:8000/cancel/{event_id}")
+            response = await client.delete(f"{BACKEND_URL}/cancel/{event_id}")
             response.raise_for_status()
             state["messages"].append({"content": f"Cancelled booking: {events[selected]['summary']} at {event_time}", "role": "assistant"})
         except httpx.HTTPStatusError as e:
